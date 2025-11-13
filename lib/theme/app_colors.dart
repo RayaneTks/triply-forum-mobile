@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Couleurs principales Triply
-  static const Color primaryGreen = Color.fromARGB(255, 64, 202, 71); // Vert foncé
-  static const Color accentGreen = Color.fromARGB(255, 152, 236, 100); // Vert moyen
-  static const Color lightGreen = Color.fromARGB(255, 164, 229, 135); // Vert clair/mint
+  static const Color primaryGreen = Color(0xFF006241); // Vert foncé
+  static const Color accentGreen = Color(0xFF35C497); // Vert moyen
+  static const Color lightGreen = Color(0xFF50D4AA); // Vert clair
   static const Color beige = Color(0xFFF5E6D3); // Beige
   static const Color darkBeige = Color(0xFFD4C4B0); // Beige foncé
   
