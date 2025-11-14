@@ -61,6 +61,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       appBar: AppBar(
+        backgroundColor: AppColors.backgroundDarkGreen,
         title: const TriplyLogo(
           fontSize: 40,
           textColor: AppColors.textLight,
