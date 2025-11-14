@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                         labelText: 'Email',
                         prefixIcon: const Icon(Icons.email),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppColors.backgroundLight,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

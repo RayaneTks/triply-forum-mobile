@@ -6,6 +6,7 @@ class AppColors {
   static const Color lightGreen = Color(0xFF50D4AA);
   static const Color beige = Color(0xFFF5E6D3);
   static const Color darkBeige = Color(0xFFD4C4B0);
+  static const Color lightBeige = Color(0xFFFAF2E9);
 
   static const Color textDark = Color(0xFF1A1A1A);
   static const Color textLight = Color(0xFFFFFFFF);
@@ -15,7 +16,7 @@ class AppColors {
 
   static const Color backgroundDarkGreen = Color(0xFF002A1C);
 
-  static const Color backgroundLight = Color(0xFFFAFAFA); // Option 1: Votre gris très clair (excellent choix)
+  static const Color backgroundLight = Color(0xFFFAFAFA);
   static const Color backgroundWhite = Color(0xFFFFFFFF);
 
   // Option 2: Un gris neutre, très clair et moderne
