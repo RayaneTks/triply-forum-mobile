@@ -184,8 +184,8 @@ class _LoginPageState extends State<LoginPage> {
                               ? null
                               : _handleSubmit,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.lightGreen,
-                            foregroundColor: AppColors.textDark,
+                            backgroundColor: AppColors.primaryGreen,
+                            foregroundColor: AppColors.textLight,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),

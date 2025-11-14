@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => AuthProvider()..initialize(),
       child: MaterialApp(
-        title: 'TriplyForum',
+        title: 'Triply',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: AppColors.primaryGreen,
