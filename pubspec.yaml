@@ -101,4 +101,4 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 
   assets:
-    - assets/logotriply.png # Cette ligne doit avoir un retrait (2 espaces)
+    - assets/triplylogowhite.png # Cette ligne doit avoir un retrait (2 espaces)
