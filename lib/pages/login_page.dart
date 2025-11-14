@@ -83,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const TriplyLogo(
-                      fontSize: 40,
+                      fontSize: 100,
                       textColor: AppColors.textLight,
                     ),
                     const SizedBox(height: 24),
