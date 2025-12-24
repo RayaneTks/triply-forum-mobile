@@ -361,12 +361,14 @@ class _NewMessageDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Nouveau message'),
-      content: SizedBox(
-        width: double.maxFinite,
+      content: ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.6,
+          maxWidth: double.maxFinite,
         ),
-        child: ListView.builder(
+        child: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
           shrinkWrap: true,
           itemCount: allUsers.length,
           itemBuilder: (context, index) {
@@ -383,6 +385,7 @@ class _NewMessageDialog extends StatelessWidget {
               },
             );
           },
+        ),
         ),
       ),
     );
