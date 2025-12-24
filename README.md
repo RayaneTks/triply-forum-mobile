@@ -34,7 +34,7 @@ Ce projet reprend le sujet de notre projet **TechGame Triply** et propose une ex
 - **Mode invité** pour consulter le forum
 - **Gestion de profil** utilisateur
 
-### Assistant IA (à venir)
+### Assistant IA 
 - **Bulle contextuelle** lors des recherches
 - **Intégration future** : recherche web, liens pertinents, suggestions de topics
 - **Réponses enrichies** basées sur l'IA
