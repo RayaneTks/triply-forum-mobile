@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/forum_post.dart';
 import '../services/forum_service.dart';
+import '../services/ai_service.dart';
 import '../theme/app_colors.dart';
 import 'forum_detail_page.dart';
 import 'login_page.dart';
@@ -81,7 +82,10 @@ class _ForumPageState extends State<ForumPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.04,
+              vertical: 8.0,
+            ),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -116,7 +120,9 @@ class _ForumPageState extends State<ForumPage> {
             height: 50,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.04,
+              ),
               itemCount: _categories.length,
               itemBuilder: (context, index) {
                 final category = _categories[index];
@@ -138,7 +144,7 @@ class _ForumPageState extends State<ForumPage> {
             ),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.01),
 
           Expanded(
             child: _isLoading
@@ -223,9 +229,13 @@ class _ForumPageState extends State<ForumPage> {
       builder: (context) => AlertDialog(
         title: const Text('Nouveau sujet de voyage'),
         content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.6,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               TextField(
                 controller: titleController,
                 decoration: const InputDecoration(
@@ -261,6 +271,7 @@ class _ForumPageState extends State<ForumPage> {
                 },
               ),
             ],
+            ),
           ),
         ),
         actions: [
@@ -270,18 +281,75 @@ class _ForumPageState extends State<ForumPage> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (titleController.text.trim().isNotEmpty &&
-                  descriptionController.text.trim().isNotEmpty) {
+              final title = titleController.text.trim();
+              final description = descriptionController.text.trim();
+              
+              if (title.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Veuillez entrer un titre pour votre post'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+                return;
+              }
+              
+              if (description.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Veuillez entrer une description pour votre post'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+                return;
+              }
+              
+              if (title.length < 5) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Le titre doit contenir au moins 5 caractères'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+                return;
+              }
+              
+              if (description.length < 10) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('La description doit contenir au moins 10 caractères'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+                return;
+              }
+              
+              try {
                 await _forumService.createPost(
-                  title: titleController.text.trim(),
-                  description: descriptionController.text.trim(),
+                  title: title,
+                  description: description,
                   authorId: authProvider.currentUser!.id,
                   authorName: authProvider.currentUser!.username,
                   category: selectedCategory,
                 );
                 if (mounted) {
                   Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Post créé avec succès !'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
                   _loadPosts();
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Erreur lors de la création du post : ${e.toString()}'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
               }
             },
@@ -302,15 +370,21 @@ class _AIChatBubble extends StatelessWidget {
     required this.resultsCount,
   });
 
-  String _getContextualMessage(String query) {
-    return 'Une mise à jour majeure de l\'intégration IA est prévue prochainement. L\'assistant IA Triply pourra effectuer des recherches approfondies sur le web pour vous fournir des informations contextuelles, des liens pertinents vers des ressources externes, des suggestions de topics connexes, et des réponses enrichies basées sur les dernières informations disponibles.';
-  }
-
   @override
   Widget build(BuildContext context) {
+    // Analyser la recherche avec l'IA
+    final aiService = AIService();
+    final aiResult = aiService.analyzeSearch(query, resultsCount);
+
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      padding: const EdgeInsets.all(18.0),
+      margin: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.04,
+        vertical: 8.0,
+      ),
+      padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -326,11 +400,18 @@ class _AIChatBubble extends StatelessWidget {
           width: 1.5,
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: screenHeight * 0.45,
+          maxWidth: double.infinity,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
+              Row(
+                children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -357,7 +438,7 @@ class _AIChatBubble extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Recherche intelligente à venir',
+                      'Recherche intelligente activée',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey,
@@ -369,72 +450,244 @@ class _AIChatBubble extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.warning.withOpacity(0.15),
+                  color: AppColors.accentGreen.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.schedule,
+                      Icons.check_circle,
                       size: 12,
-                      color: AppColors.warning,
+                      color: AppColors.accentGreen,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Bientôt',
+                      'IA',
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.warning,
+                        color: AppColors.accentGreen,
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Container(
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.7),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(
-              _getContextualMessage(query),
-              style: TextStyle(
-                color: Colors.grey.shade800,
-                fontSize: 14,
-                height: 1.6,
-                letterSpacing: 0.1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  aiResult.contextualTips,
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontSize: 14,
+                    height: 1.6,
+                    letterSpacing: 0.1,
+                  ),
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                ),
+                if (aiResult.suggestedCategories.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    'Catégories suggérées :',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: aiResult.suggestedCategories.map((category) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryGreen.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppColors.primaryGreen.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.label_outline,
+                              size: 12,
+                              color: AppColors.primaryGreen,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              category,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.primaryGreen,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+                // Afficher les informations externes si pas de résultats
+                if (aiResult.externalInfo != null) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentGreen.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: AppColors.accentGreen.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.public,
+                              size: 16,
+                              color: AppColors.accentGreen,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                aiResult.externalInfo!.title,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.accentGreen,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          aiResult.externalInfo!.description,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade700,
+                          ),
+                          overflow: TextOverflow.visible,
+                          softWrap: true,
+                        ),
+                        const SizedBox(height: 10),
+                        ...aiResult.externalInfo!.links.take(2).map((link) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.link,
+                                  size: 14,
+                                  color: AppColors.primaryGreen,
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        link.title,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.primaryGreen,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                      Text(
+                                        link.description,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                        const SizedBox(height: 8),
+                        ...aiResult.externalInfo!.tips.take(2).map((tip) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.lightbulb_outline,
+                                  size: 12,
+                                  color: AppColors.warning,
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    tip,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ],
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                size: 14,
-                color: AppColors.accentGreen,
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  resultsCount > 0
-                      ? '$resultsCount résultat${resultsCount > 1 ? 's' : ''} trouvé${resultsCount > 1 ? 's' : ''} dans le forum'
-                      : 'Recherche en cours...',
-                  style: TextStyle(
-                    fontSize: 12,
+            const SizedBox(height: 12),
+            Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 14,
                     color: AppColors.accentGreen,
-                    fontWeight: FontWeight.w500,
                   ),
-                ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      aiResult.relevanceAnalysis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.accentGreen,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

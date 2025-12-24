@@ -363,6 +363,9 @@ class _NewMessageDialog extends StatelessWidget {
       title: const Text('Nouveau message'),
       content: SizedBox(
         width: double.maxFinite,
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.6,
+        ),
         child: ListView.builder(
           shrinkWrap: true,
           itemCount: allUsers.length,

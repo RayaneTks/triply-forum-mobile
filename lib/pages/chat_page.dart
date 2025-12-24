@@ -74,27 +74,55 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _sendMessage() async {
-    if (_messageController.text.trim().isEmpty || _currentUserName == null) return;
-
     final content = _messageController.text.trim();
+    
+    if (content.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez entrer un message'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+    
+    if (_currentUserName == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erreur : utilisateur non identifié'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     _messageController.clear();
 
-    final newMessage = await _chatService.sendMessage(
-      channelId: widget.channel.id,
-      senderId: widget.currentUserId,
-      senderName: _currentUserName!,
-      content: content,
-    );
+    try {
+      final newMessage = await _chatService.sendMessage(
+        channelId: widget.channel.id,
+        senderId: widget.currentUserId,
+        senderName: _currentUserName!,
+        content: content,
+      );
 
-    setState(() {
-      _messages.add(newMessage);
-    });
+      setState(() {
+        _messages.add(newMessage);
+      });
 
-    if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de l\'envoi du message : ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }

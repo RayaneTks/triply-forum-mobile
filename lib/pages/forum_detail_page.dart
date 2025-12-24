@@ -46,27 +46,78 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   }
 
   Future<void> _addResponse() async {
-    if (_responseController.text.trim().isEmpty) return;
+    final content = _responseController.text.trim();
+    
+    if (content.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez entrer une réponse'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+    
+    if (content.length < 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Votre réponse doit contenir au moins 5 caractères'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     if (!authProvider.isLoggedIn) {
       if (mounted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const LoginPage()),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Veuillez vous connecter pour répondre à ce post'),
+            backgroundColor: Colors.orange,
+            action: SnackBarAction(
+              label: 'Se connecter',
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                );
+              },
+            ),
+          ),
         );
       }
       return;
     }
 
-    await _forumService.addResponse(
-      postId: widget.postId,
-      authorId: authProvider.currentUser!.id,
-      authorName: authProvider.currentUser!.username,
-      content: _responseController.text.trim(),
-    );
+    try {
+      await _forumService.addResponse(
+        postId: widget.postId,
+        authorId: authProvider.currentUser!.id,
+        authorName: authProvider.currentUser!.username,
+        content: content,
+      );
 
-    _responseController.clear();
-    _loadPost();
+      _responseController.clear();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Réponse ajoutée avec succès !'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      _loadPost();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de l\'ajout de la réponse : ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override

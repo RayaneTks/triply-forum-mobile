@@ -200,9 +200,13 @@ class _ChatChannelsPageState extends State<ChatChannelsPage> {
       builder: (context) => AlertDialog(
         title: const Text('Nouveau salon'),
         content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.6,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               TextField(
                 controller: nameController,
                 decoration: const InputDecoration(
@@ -238,6 +242,7 @@ class _ChatChannelsPageState extends State<ChatChannelsPage> {
                 },
               ),
             ],
+            ),
           ),
         ),
         actions: [

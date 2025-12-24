@@ -9,9 +9,16 @@ class AuthService {
     
     for (var userData in users) {
       if (userData['email'] == email) {
-        final user = User.fromJson(userData);
-        await _storage.setCurrentUserId(user.id);
-        return user;
+        // Vérifier le mot de passe
+        final storedPassword = userData['password'] as String?;
+        if (storedPassword == password) {
+          final user = User.fromJson(userData);
+          await _storage.setCurrentUserId(user.id);
+          return user;
+        } else {
+          // Mot de passe incorrect
+          return null;
+        }
       }
     }
     
@@ -32,7 +39,11 @@ class AuthService {
       createdAt: DateTime.now(),
     );
     
-    users.add(newUser.toJson());
+    // Ajouter le mot de passe aux données utilisateur (mais pas dans le modèle User)
+    final userData = newUser.toJson();
+    userData['password'] = password;
+    
+    users.add(userData);
     await _storage.saveUsers(users);
     await _storage.setCurrentUserId(newUser.id);
     
