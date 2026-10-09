@@ -1,113 +1,56 @@
-# TriplyForum
+# Triply Forum — Forum de voyage mobile
 
-Application mobile Flutter développée dans le cadre d'un projet scolaire. TriplyForum est le forum de voyage communautaire de **Triply**, une application IA de planification de voyage avancée.
+Prototype mobile Flutter réalisé dans un cadre scolaire, en complément du projet Triply. Il explore les échanges entre voyageurs à travers un forum, des salons de discussion, une messagerie et une FAQ.
 
-## 📱 À propos du projet
+## Fonctionnalités
 
-Ce projet reprend le sujet de notre projet **TechGame Triply** et propose une extension mobile sous forme de forum communautaire. L'objectif est de permettre aux voyageurs de partager leurs expériences, poser des questions et échanger des conseils pratiques sur les voyages.
+- Forum organisé par catégories : destinations, activités, hébergements et conseils.
+- Création de sujets, réponses et réactions.
+- Salons de discussion et messagerie entre profils.
+- FAQ avec recherche et filtrage.
+- Écrans de connexion, profils et mode invité.
 
-## ✨ Fonctionnalités
+## Technologies
 
-### Forum de voyage
-- **Catégories thématiques** : Destinations, Activités, Bon plans, Billets, Visas, Restaurants, Adresses, Hébergement, Conseils
-- **Recherche avancée** avec suggestions contextuelles
-- **Création de sujets** et participation aux discussions
-- **Système de réponses** avec likes/dislikes
+Flutter · Dart · Provider · SharedPreferences · path_provider · Stockage JSON.
 
-### Chat en temps réel
-- **Salons de discussion** par catégorie
-- **Messagerie instantanée** entre utilisateurs
-- **Création de nouveaux salons** thématiques
+## État du projet
 
-### Messagerie privée
-- **Conversations individuelles** entre membres
-- **Historique des messages**
-- **Indicateur de messages non lus**
+Les données sont conservées localement, notamment dans un fichier `shared_data.json`. Le mécanisme de synchronisation relit ce fichier ; il ne constitue pas une synchronisation réseau entre plusieurs appareils.
 
-### Foire aux Questions (FAQ)
-- **Base de connaissances** sur les voyages
-- **Recherche et filtrage** par catégorie
-- **Compteur de vues** pour les questions populaires
+La connexion et la messagerie relèvent du prototype local. Une authentification serveur, un backend partagé, les notifications push et une intégration IA complète restent des évolutions à développer. Les dossiers de plateformes présents ne garantissent pas que chacune soit validée.
 
-### Authentification
-- **Inscription et connexion** des utilisateurs
-- **Mode invité** pour consulter le forum
-- **Gestion de profil** utilisateur
+## Installation
 
-### Assistant IA 
-- **Bulle contextuelle** lors des recherches
-- **Intégration future** : recherche web, liens pertinents, suggestions de topics
-- **Réponses enrichies** basées sur l'IA
+Prérequis : Flutter et Dart compatibles avec la contrainte `sdk` de [`pubspec.yaml`](pubspec.yaml), actuellement `^3.10.0-290.4.beta`, ainsi qu’un appareil ou un émulateur pris en charge.
 
-## 🛠️ Technologies utilisées
-
-- **Flutter** - Framework de développement mobile
-- **Dart** - Langage de programmation
-- **Provider** - Gestion d'état
-- **SharedPreferences** - Stockage local des données
-- **JSON** - Format de données pour la persistance
-
-## 📦 Installation
-
-### Prérequis
-- Flutter SDK (version 3.10.0 ou supérieure)
-- Dart SDK
-- Un émulateur ou un appareil physique
-
-### Étapes d'installation
-
-1. Cloner le repository :
 ```bash
-git clone https://github.com/RayaneTks/triplyapp.git
-cd triplyapp
-```
-
-2. Installer les dépendances :
-```bash
+git clone https://github.com/RayaneTks/triply-forum-mobile.git
+cd triply-forum-mobile
 flutter pub get
-```
-
-3. Lancer l'application :
-```bash
 flutter run
 ```
 
-## 🎨 Design
+La contrainte Dart du projet doit guider le choix du SDK Flutter ; l’ancienne indication « Flutter 3.10 » ne correspond pas à cette contrainte.
 
-L'application utilise la palette de couleurs de **Triply** :
-- Vert primaire pour les éléments principaux
-- Vert clair pour les accents
-- Design moderne avec Material 3
-- Interface épurée et intuitive
+## Commandes
 
-## 📂 Structure du projet
-
-```
-lib/
-├── models/          # Modèles de données
-├── pages/           # Pages de l'application
-├── services/        # Services de gestion des données
-├── providers/       # Gestion d'état avec Provider
-├── theme/           # Configuration du thème
-└── widgets/         # Widgets réutilisables
+```bash
+flutter analyze  # Analyser le code Dart
+flutter test     # Exécuter les tests présents
 ```
 
-## 🚀 Fonctionnalités à venir
+## Organisation
 
-- **Intégration IA complète** : recherche web, génération de contenu contextuel
-- **Synchronisation en temps réel** : partage de données entre utilisateurs
-- **Notifications push** : alertes pour nouveaux messages et réponses
-- **Géolocalisation** : suggestions basées sur la position
-- **Partage social** : partage de posts et destinations
+| Chemin | Rôle |
+|---|---|
+| `lib/models/` | Modèles du forum, des messages et des profils. |
+| `lib/pages/` | Écrans de l’application. |
+| `lib/providers/` | Gestion d’état. |
+| `lib/services/` | Stockage et services du prototype. |
+| `lib/theme/` | Palette et thème. |
+| `lib/widgets/` | Composants partagés. |
 
-## 👥 Équipe
+## Documentation
 
-Projet développé dans le cadre d'un projet scolaire, extension mobile de **Triply**.
-
-## 📄 Licence
-
-Ce projet est développé à des fins éducatives.
-
----
-
-**TriplyForum** - Forum de voyage communautaire pour Triply
+Le projet web associé est [`Triply`](https://github.com/RayaneTks/triply). Ce prototype mobile est développé à des fins pédagogiques.
